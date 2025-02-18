@@ -33,12 +33,12 @@ def get_config_in_defconfig(file_name, kernel_dir):
     return (special_defconfig, build_config, ext_modules)
 
 def help():
-    print 'Usage:'
-    print '  python scripts/gen_build_config.py --project <project> --kernel-defconfig <kernel project defconfig file> --kernel-defconfig-overlays <kernel project overlay defconfig files> --kernel-build-config-overlays <kernel build config overlays> --build-mode <mode> --out-file <gen build.config>'
-    print 'Or:'
-    print '  python scripts/gen_build_config.py -p <project> --kernel-defconfig <kernel project defconfig file> --kernel-defconfig-overlays <kernel project overlay defconfig files> --kernel-build-config-overlays <kernel build config overlays> -m <mode> -o <gen build.config>'
-    print ''
-    print 'Attention: Must set generated build.config, and project or kernel project defconfig file!!'
+    print ('Usage:')
+    print ('python scripts/gen_build_config.py --project <project> --kernel-defconfig <kernel project defconfig file> --kernel-defconfig-overlays <kernel project overlay defconfig files> --kernel-build-config-overlays <kernel build config overlays> --build-mode <mode> --out-file <gen build.config>')
+    print ('Or:')
+    print ('  python scripts/gen_build_config.py -p <project> --kernel-defconfig <kernel project defconfig file> --kernel-defconfig-overlays <kernel project overlay defconfig files> --kernel-build-config-overlays <kernel build config overlays> -m <mode> -o <gen build.config>')
+    print ('')
+    print ('Attention: Must set generated build.config, and project or kernel project defconfig file!!')
     sys.exit(2)
 
 def main(**args):
