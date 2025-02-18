@@ -1,0 +1,77 @@
+name: Build Kernel
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y \
+          build-essential \
+          gcc-aarch64-linux-gnu \
+          gcc-arm-linux-gnueabi \
+          make \
+          bc \
+          python3 \
+          libncurses-dev \
+          bison \
+          flex \
+          libssl-dev \
+          libelf-dev \
+          ccache \
+          liblz4-tool \
+          git
+
+    - name: Checkout the kernel source
+      run: |
+        git clone https://github.com/alali11/a155-U-u1
+        cd a155-U-u1
+
+    - name: Build Kernel
+      run: |
+        cd kernel-5.10
+        python3 scripts/gen_build_config.py --kernel-defconfig a15_00_defconfig --kernel-defconfig-overlays entry_level.config -m user -o ../out/target/product/a15/obj/KERNEL_OBJ/build.config
+
+        export ARCH=arm64
+        export CROSS_COMPILE="aarch64-linux-gnu-"
+        export CROSS_COMPILE_COMPAT="arm-linux-gnueabi-"
+        export OUT_DIR="../out/target/product/a15/obj/KERNEL_OBJ"
+        export DIST_DIR="../out/target/product/a15/obj/KERNEL_OBJ"
+        export BUILD_CONFIG="../out/target/product/a15/obj/KERNEL_OBJ/build.config"
+
+        cd ../kernel
+        ./build/build.sh -j$(nproc)
+
+    - name: Prepare Flashable ZIP
+      run: |
+        cd out/target/product/a15
+        mkdir -p flashable_kernel/META-INF/com/google/android
+        cp boot.img flashable_kernel/
+        cp Image.gz flashable_kernel/
+        cp kernel-dtb flashable_kernel/
+        
+        # Criação do script do updater (opcional, para custom recovery)
+        echo -e "#! /sbin/sh\n\n# Flash kernel\nflash_image boot flashable_kernel/boot.img" > flashable_kernel/META-INF/com/google/android/updater-script
+
+        # Compactar tudo em um arquivo .zip
+        cd flashable_kernel
+        zip -r9 ../kernel-flashable.zip .
+
+    - name: Upload flashable kernel ZIP
+      uses: actions/upload-artifact@v3
+      with:
+        name: flashable-kernel-zip
+        path: out/target/product/a15/kernel-flashable.zip
