@@ -26,6 +26,7 @@ jobs:
           make \
           bc \
           python3 \
+          python2 \
           libncurses-dev \
           bison \
           flex \
