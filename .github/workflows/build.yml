@@ -71,7 +71,7 @@ jobs:
         zip -r9 ../kernel-flashable.zip .
 
     - name: Upload flashable kernel ZIP
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v5
       with:
         name: flashable-kernel-zip
         path: out/target/product/a15/kernel-flashable.zip
